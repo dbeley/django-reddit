@@ -16,36 +16,28 @@ def index(request):
 def reddit_scraper(request):
     if request.method == "POST":
         if "formpostcomments" in request.POST:
-            # create a form instance and populate it with data from the request:
             try:
                 formpostcomments = PostComments(request.POST)
             except Exception as e:
                 print(e)
                 return HttpResponse(content=e, status=400)
-            # check whether it's valid:
             if formpostcomments.is_valid():
                 response = HttpResponse(content_type="text/plain")
                 response[
                     "Content-Disposition"
-                ] = f"attachment; filename={formpostcomments.cleaned_data['username']}_post_comments.csv"
+                ] = f"attachment; filename={formpostcomments.cleaned_data['post_urls']}_post_comments.csv"
                 content = extract_comments_post(
                     formpostcomments.cleaned_data["post_urls"]
                 )
                 content.to_csv(response, index=False, sep="\t")
                 return response
         elif "formusercomments" in request.POST:
-            # create a form instance and populate it with data from the request:
             try:
                 formusercomments = UserComments(request.POST)
             except Exception as e:
                 print(e)
                 return HttpResponse(content=e, status=400)
-            # check whether it's valid:
             if formusercomments.is_valid():
-                # content = extract_comments_user(
-                #     formusercomments.cleaned_data["username"]
-                # )
-                # return HttpResponse(content, content_type="text/plain")
                 response = HttpResponse(content_type="text/plain")
                 response[
                     "Content-Disposition"
@@ -56,18 +48,12 @@ def reddit_scraper(request):
                 content.to_csv(response, index=False, sep="\t")
                 return response
         elif "formuserposts" in request.POST:
-            # create a form instance and populate it with data from the request:
             try:
                 formuserposts = UserPosts(request.POST)
             except Exception as e:
                 print(e)
                 return HttpResponse(content=e, status=400)
-            # check whether it's valid:
             if formuserposts.is_valid():
-                # content = extract_posts_user(
-                #     formuserposts.cleaned_data["genre"]
-                # )
-                # return HttpResponse(content, content_type="text/plain")
                 response = HttpResponse(content_type="text/plain")
                 response[
                     "Content-Disposition"

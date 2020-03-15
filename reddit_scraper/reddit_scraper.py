@@ -36,7 +36,7 @@ def extract_comments_post(url=None):
                 {
                     "id": comment.id,
                     "subreddit": comment.subreddit.display_name,
-                    "date": comment.created_utc,
+                    "timestamp": comment.created_utc,
                     "author": author,
                     "comment": comment.body,
                     "score": comment.score,
@@ -54,6 +54,7 @@ def extract_comments_post(url=None):
             )
 
     df = pd.DataFrame(comments)
+    df["date"] = pd.to_datetime(df["timestamp"], unit="s")
     return df
 
 
@@ -71,7 +72,7 @@ def extract_comments_user(username):
                     "comment": comment.body,
                     "permalink": f"https://reddit.com{comment.permalink}",
                     "length": len(comment.body),
-                    "date": comment.created_utc,
+                    "timestamp": comment.created_utc,
                     "score": comment.score,
                     "subreddit": comment.subreddit.display_name,
                     "gilded": comment.gilded,
@@ -82,6 +83,7 @@ def extract_comments_user(username):
                 }
             )
     df = pd.DataFrame(comments)
+    df["date"] = pd.to_datetime(df["timestamp"], unit="s")
     return df
 
 
@@ -106,7 +108,7 @@ def extract_posts_user(username):
                     "author_css_flair": str(submission.author_flair_css_class),
                     "author_text_flair": str(submission.author_flair_text),
                     "permalink": f"https://reddit.com{submission.permalink}",
-                    "date": submission.created_utc,
+                    "timestamp": submission.created_utc,
                     "flair": str(submission.link_flair_text),
                     "text": str(submission.selftext),
                     "domain": submission.domain,
@@ -118,4 +120,5 @@ def extract_posts_user(username):
                 }
             )
     df = pd.DataFrame(posts)
+    df["date"] = pd.to_datetime(df["timestamp"], unit="s")
     return df

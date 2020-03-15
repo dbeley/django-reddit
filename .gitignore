@@ -1,0 +1,4 @@
+*.ini
+tags
+.venv/
+db.sqlite3

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+<h1>Reddit tools</h1>
+<hr>
+<ul>
+
+	<p>On this website, you will find several tools to play with reddit data. </p>
+
+<li><a href="/scraping">Scraping</a>: Scraping tools.</li>
+	<ul>
+	<li><a href="/scraping#postcomments">Timeline</a>: Export comments of one or several reddit posts.</li>
+	<li><a href="/scraping#usercomments">Favorite</a>: Export the last 1000 comments of a reddit user.</li>
+	<li><a href="/scraping#userposts">Genre</a>: Export posts of a reddit user.</li>
+	</ul>
+</ul>
+
+<hr>
+
+<p><a href="https://github.com/dbeley/django-reddit">Source Code</a> | <a href="https://dbeley.ovh">My website</a></p>
+{% endblock %}

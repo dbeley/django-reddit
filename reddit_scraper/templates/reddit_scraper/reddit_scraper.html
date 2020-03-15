@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+{# Load the tag library #}
+{% load bootstrap4 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+
+{% block page_content %}
+<h1>Reddit scraping</h3>
+<hr>
+
+<ul class="nav nav-pills mb-3" id="tab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="postcomments-tab" data-toggle="pill" href="#postcomments" role="tab" aria-controls="postcomments" aria-selected="true">Post Comments</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="usercomments-tab" data-toggle="pill" href="#usercomments" role="tab" aria-controls="usercomments" aria-selected="false">User Comments</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="userposts-tab" data-toggle="pill" href="#userposts" role="tab" aria-controls="userposts" aria-selected="false">User Posts</a>
+</ul>
+<div class="tab-content" id="pills-tabContent">
+  <div class="tab-pane fade show active" id="postcomments" role="tabpanel" aria-labelledby="postcomments-tab">
+  	  <p>Export a list of comments from a list of reddit posts.</p>
+  	  <form action="" method="post" class="form">
+    	{% csrf_token %}
+    	{% bootstrap_form formpostcomments layout='inline' %}
+    	{% buttons %}
+        	<button type="submit" name="formpostcomments" class="btn btn-primary">Submit</button>
+    	{% endbuttons %}
+	</form>
+</div>
+  <div class="tab-pane fade" id="usercomments" role="tabpanel" aria-labelledby="usercomments-tab">
+  	  <p>Export the last 1000 comments of one or several reddit users.</p>
+	<form action="" method="post" class="form">
+    	{% csrf_token %}
+    	{% bootstrap_form formusercomments layout='inline' %}
+    	{% buttons %}
+        	<button type="submit" name="formusercomments" class="btn btn-primary">Submit</button>
+    	{% endbuttons %}
+	</form>
+</div>
+  <div class="tab-pane fade" id="userposts" role="tabpanel" aria-labelledby="userposts-tab">
+  	  <p>Export the posts of one or several reddit users.</p>
+	<form action="" method="post" class="form">
+    	{% csrf_token %}
+    	{% bootstrap_form formuserposts layout='inline' %}
+    	{% buttons %}
+        	<button type="submit" name="formuserposts" class="btn btn-primary">Submit</button>
+    	{% endbuttons %}
+	</form>
+</div>
+{% endblock %}

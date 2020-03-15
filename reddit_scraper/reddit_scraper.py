@@ -1,11 +1,22 @@
 import pandas as pd
 import praw
+import os
 
 
 def redditconnect():
-    user_agent = "python:script:download_comments_user"
-
-    reddit = praw.Reddit("reddit", user_agent=user_agent)
+    try:
+        user_agent = "python:django-reddit:selfhost"
+        reddit = praw.Reddit("reddit", user_agent=user_agent)
+    except Exception as e:
+        print(e)
+        user_agent = "python:django-reddit:heroku"
+        reddit = praw.Reddit(
+            client_id=os.environ("PRAW_CLIENT_ID"),
+            client_secret=os.environ("PRAW_CLIENT_SECRET"),
+            password=os.environ("PRAW_PASSWORD"),
+            user_agent=user_agent,
+            username=os.environ("PRAW_USERNAME"),
+        )
     return reddit
 
 
@@ -13,134 +24,77 @@ def extract_comments_post(url=None):
     reddit = redditconnect()
     comments = []
     urls = [x.strip() for x in url.split(",")]
-    # if post_id:
-    #     submission = reddit.submission(id=post_id)
-    d = []
     for url in urls:
         submission = reddit.submission(url=url)
         submission.comments.replace_more(limit=None)
         for index, comment in enumerate(submission.comments.list(), 1):
-            comments.append(comment)
-        for x in comments:
-            if not x.author:
+            if not comment.author:
                 author = "[deleted]"
             else:
-                author = x.author.name
-            d.append(
+                author = comment.author.name
+            comments.append(
                 {
-                    "ID": x.id,
-                    "Subreddit": x.subreddit.display_name,
-                    "Date": x.created_utc,
+                    "ID": comment.id,
+                    "Subreddit": comment.subreddit.display_name,
+                    "Date": comment.created_utc,
                     "Author": author,
-                    "Comment": x.body,
-                    "Score": x.score,
-                    "Length": len(x.body),
-                    "Gilded": x.gilded,
-                    "Parent": x.parent_id,
-                    "Flair": x.author_flair_text,
+                    "Comment": comment.body,
+                    "Score": comment.score,
+                    "Length": len(comment.body),
+                    "Gilded": comment.gilded,
+                    "Parent": comment.parent_id,
+                    "Flair": comment.author_flair_text,
                     "Post ID": submission.id,
                     "Post Permalink": f"https://reddit.com{submission.permalink}",
                     "Post Title": submission.title,
                     "Post Author": submission.author,
                     "Post URL": submission.url,
-                    "Permalink": f"https://reddit.com{x.permalink}",
+                    "Permalink": f"https://reddit.com{comment.permalink}",
                 }
             )
 
-    df = pd.DataFrame(d)
+    df = pd.DataFrame(comments)
     return df
 
 
 def extract_comments_user(username):
     usernames = [x.strip() for x in username.split(",")]
     comments = []
-    # columns = [
-    #     "User",
-    #     "ID",
-    #     "Comment",
-    #     "Permalink",
-    #     "Length",
-    #     "Date",
-    #     "Score",
-    #     "Subreddit",
-    #     "Gilded",
-    #     "Post ID",
-    #     "Post Title",
-    #     "Post URL",
-    #     "Post Permalink",
-    #     "Post Author",
-    # ]
-
     reddit = redditconnect()
-    d = []
     for username in usernames:
         user = reddit.redditor(username)
-
-        for index, submission in enumerate(user.comments.new(limit=None), 1):
-            comments.append(submission)
-
-        for x in comments:
-            d.append(
+        for index, comment in enumerate(user.comments.new(limit=None), 1):
+            comments.append(
                 {
                     "User": str(username),
-                    "ID": x.id,
-                    "Comment": x.body,
-                    "Permalink": f"https://reddit.com{x.permalink}",
-                    "Length": len(x.body),
-                    "Date": x.created_utc,
-                    "Score": x.score,
-                    "Subreddit": x.subreddit.display_name,
-                    "Gilded": x.gilded,
-                    "Post ID": x.link_id,
-                    "Post Title": x.link_title,
-                    "Post URL": x.link_url,
-                    "Post Permalink": f"https://reddit.com{submission.permalink}",
-                    "Post Author": x.link_author,
+                    "ID": comment.id,
+                    "Comment": comment.body,
+                    "Permalink": f"https://reddit.com{comment.permalink}",
+                    "Length": len(comment.body),
+                    "Date": comment.created_utc,
+                    "Score": comment.score,
+                    "Subreddit": comment.subreddit.display_name,
+                    "Gilded": comment.gilded,
+                    "Post ID": comment.link_id,
+                    "Post Title": comment.link_title,
+                    "Post URL": comment.link_url,
+                    "Post Author": comment.link_author,
                 }
             )
-
-    df = pd.DataFrame(d)
-    # df = df[columns]
+    df = pd.DataFrame(comments)
     return df
 
 
 def extract_posts_user(username):
     usernames = [x.strip() for x in username.split(",")]
-    posts = []
-    # columns = [
-    #     "ID",
-    #     "Title",
-    #     "Date",
-    #     "Score",
-    #     "Ratio",
-    #     "Comments",
-    #     "Flair",
-    #     "Domain",
-    #     "Text",
-    #     "URL",
-    #     "Permalink",
-    #     "Author",
-    #     "Author CSS Flair",
-    #     "Author Text Flair",
-    #     "Gilded",
-    #     "Can Gild",
-    #     "Hidden",
-    #     "Archived",
-    #     "Can Crosspost",
-    # ]
-
     reddit = redditconnect()
+    posts = []
     for username in usernames:
         user = reddit.redditor(username)
-
         for index, submission in enumerate(
             user.submissions.new(limit=None), 1
         ):
-            posts.append(submission)
-
-        d = []
-        for submission in posts:
-            d.append(
+            posts.append(
                 {
                     "ID": submission.name,
                     "Title": submission.title,
@@ -163,6 +117,5 @@ def extract_posts_user(username):
                     "Can Crosspost": submission.is_crosspostable,
                 }
             )
-    df = pd.DataFrame(d)
-    # df = df[columns]
+    df = pd.DataFrame(posts)
     return df

@@ -25,7 +25,7 @@ def reddit_scraper(request):
                 response = HttpResponse(content_type="text/plain")
                 response[
                     "Content-Disposition"
-                ] = f"attachment; filename={formpostcomments.cleaned_data['post_urls']}_post_comments.csv"
+                ] = f"attachment; filename=post_comments.csv"
                 content = extract_comments_post(
                     formpostcomments.cleaned_data["post_urls"]
                 )

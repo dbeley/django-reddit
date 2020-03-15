@@ -41,6 +41,7 @@ SECRET_KEY = get_secret(BASE_DIR, "secret.ini")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+# DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -57,6 +58,7 @@ INSTALLED_APPS = [
     "reddit_scraper",
     "widget_tweaks",
     "bootstrap4",
+    "django_tables2",
 ]
 
 MIDDLEWARE = [

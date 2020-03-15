@@ -6,6 +6,7 @@ from .reddit_scraper import (
     extract_comments_user,
     extract_posts_user,
 )
+import django_tables2 as tables
 
 
 def index(request):

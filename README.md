@@ -33,3 +33,4 @@ If you can't use ini files (i.e. when deploying with heroku), you can use those 
 - `PRAW_CLIENT_SECRET`
 - `PRAW_PASSWORD`
 - `PRAW_USERNAME`
+- `DJANGO_SECRET_KEY`

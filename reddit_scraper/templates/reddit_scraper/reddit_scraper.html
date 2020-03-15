@@ -24,6 +24,9 @@
 <div class="tab-content" id="pills-tabContent">
   <div class="tab-pane fade show active" id="postcomments" role="tabpanel" aria-labelledby="postcomments-tab">
   	  <p>Export a list of comments from a list of reddit posts.</p>
+		<div class="alert alert-warning" role="alert">
+		The exported csv files are best imported with LibreOffice. Excel is not recommended and might cause issues.
+		</div>
   	  <form action="" method="post" class="form">
     	{% csrf_token %}
     	{% bootstrap_form formpostcomments layout='inline' %}
@@ -34,6 +37,9 @@
 </div>
   <div class="tab-pane fade" id="usercomments" role="tabpanel" aria-labelledby="usercomments-tab">
   	  <p>Export the last 1000 comments of one or several reddit users.</p>
+		<div class="alert alert-warning" role="alert">
+		The exported csv files are best imported with LibreOffice. Excel is not recommended and might cause issues.
+		</div>
 	<form action="" method="post" class="form">
     	{% csrf_token %}
     	{% bootstrap_form formusercomments layout='inline' %}

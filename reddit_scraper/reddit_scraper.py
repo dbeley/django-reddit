@@ -1,6 +1,8 @@
 import pandas as pd
 import praw
 import os
+import requests
+import json
 
 
 def redditconnect():
@@ -122,3 +124,10 @@ def extract_posts_user(username):
     df = pd.DataFrame(posts)
     df["date"] = pd.to_datetime(df["timestamp"], unit="s")
     return df
+
+
+def retrieve_last_FL():
+    headers = {"User-Agent": "Reddit FL retriever"}
+    url = "https://www.reddit.com/search.json?q=subreddit%3Afrance%20flair%3A%22Forum%20Libre%22%20author%3AAutoModerator%20title%3A%22Forum%20Libre*%22&sort=new"
+    req = requests.get(url, headers=headers)
+    return json.loads(req.content)["data"]["children"][0]["data"]["url"]

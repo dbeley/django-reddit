@@ -5,6 +5,7 @@
 Simple django site acting as a frontend for:
 
 - [reddit-scraper](https://github.com/dbeley/reddit-scraper): Various scripts for donwloading posts/submissions/comments of a reddit subreddit/post/user.
+- /r/france Forum Libre redirect.
 
 ## Secrets
 

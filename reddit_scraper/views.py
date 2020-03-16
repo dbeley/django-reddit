@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .forms import PostComments, UserComments, UserPosts
 from .reddit_scraper import (
     extract_comments_post,
     extract_comments_user,
     extract_posts_user,
+    retrieve_last_FL,
 )
 import django_tables2 as tables
 
@@ -79,3 +80,12 @@ def reddit_scraper(request):
             "formuserposts": formuserposts,
         },
     )
+
+
+def fl_redirect(request):
+    try:
+        url = retrieve_last_FL()
+        return redirect(url)
+    except Exception as e:
+        print(e)
+        return HttpResponse(content=e, status=400)

@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .forms import PostComments, UserComments, UserPosts
-from .reddit_scraper import (
+
+from .tasks import (
     extract_comments_post,
     extract_comments_user,
     extract_posts_user,
@@ -25,8 +26,8 @@ def reddit_scraper(request):
                 return HttpResponse(content=e, status=400)
             if formpostcomments.is_valid():
                 response = HttpResponse(content_type="text/plain")
-                content = extract_comments_post(
-                    formpostcomments.cleaned_data["post_urls"],
+                content = extract_comments_post.delay(
+                    formpostcomments.cleaned_data["post_urls"]
                 )
                 if formpostcomments.cleaned_data["export_format"] == "csv":
                     response[
@@ -47,8 +48,8 @@ def reddit_scraper(request):
                 return HttpResponse(content=e, status=400)
             if formusercomments.is_valid():
                 response = HttpResponse(content_type="text/plain")
-                content = extract_comments_user(
-                    formusercomments.cleaned_data["username"],
+                content = extract_comments_user.delay(
+                    formusercomments.cleaned_data["username"]
                 )
                 if formusercomments.cleaned_data["export_format"] == "csv":
                     response[
@@ -69,8 +70,8 @@ def reddit_scraper(request):
                 return HttpResponse(content=e, status=400)
             if formuserposts.is_valid():
                 response = HttpResponse(content_type="text/plain")
-                content = extract_posts_user(
-                    formuserposts.cleaned_data["username"],
+                content = extract_posts_user.delay(
+                    formuserposts.cleaned_data["username"]
                 )
                 if formuserposts.cleaned_data["export_format"] == "csv":
                     response[
@@ -102,7 +103,7 @@ def reddit_scraper(request):
 
 def fl_redirect(request):
     try:
-        url = retrieve_last_FL()
+        url = retrieve_last_FL.delay()
         return redirect(url)
     except Exception as e:
         print(e)

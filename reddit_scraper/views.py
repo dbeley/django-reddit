@@ -25,13 +25,19 @@ def reddit_scraper(request):
                 return HttpResponse(content=e, status=400)
             if formpostcomments.is_valid():
                 response = HttpResponse(content_type="text/plain")
-                response[
-                    "Content-Disposition"
-                ] = f"attachment; filename=post_comments.csv"
                 content = extract_comments_post(
-                    formpostcomments.cleaned_data["post_urls"]
+                    formpostcomments.cleaned_data["post_urls"],
                 )
-                content.to_csv(response, index=False, sep="\t")
+                if formpostcomments.cleaned_data["export_format"] == "csv":
+                    response[
+                        "Content-Disposition"
+                    ] = f"attachment; filename=post_comments.csv"
+                    content.to_csv(response, index=False, sep="\t")
+                elif formpostcomments.cleaned_data["export_format"] == "xlsx":
+                    response[
+                        "Content-Disposition"
+                    ] = f"attachment; filename=post_comments.xlsx"
+                    content.to_excel(response, index=False)
                 return response
         elif "formusercomments" in request.POST:
             try:
@@ -41,13 +47,19 @@ def reddit_scraper(request):
                 return HttpResponse(content=e, status=400)
             if formusercomments.is_valid():
                 response = HttpResponse(content_type="text/plain")
-                response[
-                    "Content-Disposition"
-                ] = f"attachment; filename={formusercomments.cleaned_data['username']}_user_comments.csv"
                 content = extract_comments_user(
-                    formusercomments.cleaned_data["username"]
+                    formusercomments.cleaned_data["username"],
                 )
-                content.to_csv(response, index=False, sep="\t")
+                if formusercomments.cleaned_data["export_format"] == "csv":
+                    response[
+                        "Content-Disposition"
+                    ] = f"attachment; filename={formusercomments.cleaned_data['username']}_user_comments.csv"
+                    content.to_csv(response, index=False, sep="\t")
+                elif formusercomments.cleaned_data["export_format"] == "xlsx":
+                    response[
+                        "Content-Disposition"
+                    ] = f"attachment; filename={formusercomments.cleaned_data['username']}_user_comments.xlsx"
+                    content.to_excel(response, index=False)
                 return response
         elif "formuserposts" in request.POST:
             try:
@@ -57,13 +69,19 @@ def reddit_scraper(request):
                 return HttpResponse(content=e, status=400)
             if formuserposts.is_valid():
                 response = HttpResponse(content_type="text/plain")
-                response[
-                    "Content-Disposition"
-                ] = f"attachment; filename={formuserposts.cleaned_data['username']}_user_posts.csv"
                 content = extract_posts_user(
-                    formuserposts.cleaned_data["username"]
+                    formuserposts.cleaned_data["username"],
                 )
-                content.to_csv(response, index=False, sep="\t")
+                if formuserposts.cleaned_data["export_format"] == "csv":
+                    response[
+                        "Content-Disposition"
+                    ] = f"attachment; filename={formuserposts.cleaned_data['username']}_user_posts.csv"
+                    content.to_csv(response, index=False, sep="\t")
+                elif formuserposts.cleaned_data["export_format"] == "xlsx":
+                    response[
+                        "Content-Disposition"
+                    ] = f"attachment; filename={formuserposts.cleaned_data['username']}_user_posts.xlsx"
+                    content.to_excel(response, index=False)
                 return response
 
     # if a GET (or any other method) we'll create a blank form

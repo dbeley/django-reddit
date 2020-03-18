@@ -15,6 +15,7 @@ requests = "*"
 django-widget-tweaks = "*"
 pandas = "*"
 django-tables2 = "*"
+openpyxl = "*"
 
 [requires]
 python_version = "3.8"

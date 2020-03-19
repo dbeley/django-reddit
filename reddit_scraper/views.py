@@ -46,7 +46,7 @@ def reddit_scraper(request):
                         content2.to_excel(response, index=False)
                     return response
             except Exception as e:
-                raise HttpResponseNotFound(e)
+                return HttpResponseNotFound(e)
         elif "formusercomments" in request.POST:
             try:
                 formusercomments = UserComments(request.POST)
@@ -73,7 +73,7 @@ def reddit_scraper(request):
                         content.to_excel(response, index=False)
                     return response
             except Exception as e:
-                raise HttpResponseNotFound(e)
+                return HttpResponseNotFound(e)
         elif "formuserposts" in request.POST:
             try:
                 formuserposts = UserPosts(request.POST)
@@ -97,7 +97,7 @@ def reddit_scraper(request):
                         content.to_excel(response, index=False)
                     return response
             except Exception as e:
-                raise HttpResponseNotFound(e)
+                return HttpResponseNotFound(e)
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -122,4 +122,4 @@ def fl_redirect(request):
             time.sleep(0.5)
         return redirect(url.get())
     except Exception as e:
-        raise HttpResponseNotFound(e)
+        return HttpResponseNotFound(e)

@@ -13,6 +13,7 @@ app = Celery("reddit_django")
 if "REDIS_URL" in os.environ:
     app.conf.update(
         BROKER_URL=os.environ["REDIS_URL"],
+        CELERY_BROKER_URL=os.environ["REDIS_URL"],
         CELERY_RESULT_BACKEND=os.environ["REDIS_URL"],
     )
     # print("Deployment configuration.")

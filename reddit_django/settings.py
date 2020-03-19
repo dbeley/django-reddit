@@ -143,7 +143,13 @@ USE_TZ = True
 STATIC_URL = "/static/"
 
 CELERY_BROKER_URL = "redis://"
-CELERY_RESULT_BACKEND = "django-db"
-CELERY_CACHE_BACKEND = "django-cache"
+# CELERY_RESULT_BACKEND = "django-db"
+# CELERY_CACHE_BACKEND = "django-cache"
+CACHES = {
+    "default": {
+        "BACKEND": "redis_cache.RedisCache",
+        "LOCATION": os.environ.get("REDIS_URL"),
+    }
+}
 
 django_heroku.settings(locals())

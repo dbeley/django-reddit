@@ -10,7 +10,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "reddit_django.settings")
 # app = Celery("reddit_django", backend="redis://localhost", broker="pyamqp://")
 app = Celery("reddit_django")
 
-if os.environ.get("REDIS_URL"):
+if "REDIS_URL" in os.environ:
     app.conf.update(
         BROKER_URL=os.environ["REDIS_URL"],
         CELERY_RESULT_BACKEND=os.environ["REDIS_URL"],

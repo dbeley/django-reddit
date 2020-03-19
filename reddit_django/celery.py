@@ -9,6 +9,10 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "reddit_django.settings")
 
 # app = Celery("reddit_django", backend="redis://localhost", broker="pyamqp://")
 app = Celery("reddit_django")
+app.conf.update(
+    BROKER_URL=os.environ["REDIS_URL"],
+    CELERY_RESULT_BACKEND=os.environ["REDIS_URL"],
+)
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.

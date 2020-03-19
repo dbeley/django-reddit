@@ -145,9 +145,5 @@ STATIC_URL = "/static/"
 CELERY_BROKER_URL = "redis://"
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_CACHE_BACKEND = "django-cache"
-app.conf.update(
-    BROKER_URL=os.environ["REDIS_URL"],
-    CELERY_RESULT_BACKEND=os.environ["REDIS_URL"],
-)
 
 django_heroku.settings(locals())

@@ -23,21 +23,21 @@ def extract_comments_post(url=None):
                 author = comment.author.name
             comments.append(
                 {
-                    "id": comment.id,
-                    "subreddit": comment.subreddit.display_name,
+                    "id": str(comment.id),
+                    "subreddit": str(comment.subreddit.display_name),
                     "timestamp": int(comment.created_utc),
-                    "author": author,
-                    "comment": comment.body,
-                    "score": comment.score,
+                    "author": str(author),
+                    "comment": str(comment.body),
+                    "score": str(comment.score),
                     "length": len(comment.body),
-                    "gilded": comment.gilded,
-                    "parent": comment.parent_id,
-                    "flair": comment.author_flair_text,
-                    "post_id": submission.id,
+                    "gilded": int(comment.gilded),
+                    "parent": str(comment.parent_id),
+                    "flair": str(comment.author_flair_text),
+                    "post_id": str(submission.id),
                     "post_permalink": f"https://reddit.com{submission.permalink}",
-                    "post_title": submission.title,
-                    "post_author": submission.author,
-                    "post_url": submission.url,
+                    "post_title": str(submission.title),
+                    "post_author": str(submission.author),
+                    "post_url": str(submission.url),
                     "permalink": f"https://reddit.com{comment.permalink}",
                 }
             )

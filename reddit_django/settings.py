@@ -154,6 +154,7 @@ STATIC_URL = "/static/"
 # else:
 #     print("Local Django configuration.")
 # CELERY_BROKER_URL = "redis://localhost"
+CELERY_BROKER_URL = os.environ["REDIS_URL"]
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_CACHE_BACKEND = "django-cache"
 # CELERY_BROKER_URL = "redis://localhost"

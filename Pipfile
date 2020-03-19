@@ -19,6 +19,7 @@ openpyxl = "*"
 celery = "*"
 redis = "*"
 django-celery-results = "*"
+django-redis-cache = "*"
 
 [requires]
 python_version = "3.8"

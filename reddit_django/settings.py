@@ -139,11 +139,25 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
-
 STATIC_URL = "/static/"
 
+# if os.environ.get("REDIS_URL"):
+#     print("Deployment configuration.")
+#     CELERY_BROKER_URL = os.environ["REDIS_URL"]
+#     CELERY_RESULT_BACKEND = os.environ["REDIS_URL"]
+#     CACHES = {
+#         "default": {
+#             "BACKEND": "redis_cache.RedisCache",
+#             "LOCATION": os.environ.get("REDIS_URL"),
+#         }
+#     }
+# else:
+#     print("Local Django configuration.")
 CELERY_BROKER_URL = "redis://localhost"
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_CACHE_BACKEND = "django-cache"
+# CELERY_BROKER_URL = "redis://localhost"
+# CELERY_RESULT_BACKEND = "django-db"
+# CELERY_CACHE_BACKEND = "django-cache"
 
 django_heroku.settings(locals())

@@ -35,7 +35,7 @@ def reddit_scraper(request):
                         response[
                             "Content-Disposition"
                         ] = f"attachment; filename=post_comments.csv"
-                        content2.to_csv(response, index=False, sep="\t")
+                        content.to_csv(response, index=False, sep="\t")
                     elif (
                         formpostcomments.cleaned_data["export_format"]
                         == "xlsx"
@@ -43,7 +43,7 @@ def reddit_scraper(request):
                         response[
                             "Content-Disposition"
                         ] = f"attachment; filename=post_comments.xlsx"
-                        content2.to_excel(response, index=False)
+                        content.to_excel(response, index=False)
                     return response
             except Exception as e:
                 return HttpResponseNotFound(e)

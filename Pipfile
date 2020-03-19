@@ -18,6 +18,7 @@ django-tables2 = "*"
 openpyxl = "*"
 celery = "*"
 redis = "*"
+django-celery-results = "*"
 
 [requires]
 python_version = "3.8"

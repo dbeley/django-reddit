@@ -7,6 +7,7 @@ from celery import Celery
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "reddit_django.settings")
 
+# app = Celery("reddit_django", backend="redis://localhost", broker="pyamqp://")
 app = Celery("reddit_django")
 
 # Using a string here means the worker doesn't have to serialize

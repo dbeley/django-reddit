@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .forms import PostComments, UserComments, UserPosts
+import pandas as pd
+import time
 
 from .tasks import (
     extract_comments_post,
@@ -29,6 +31,12 @@ def reddit_scraper(request):
                 content = extract_comments_post.delay(
                     formpostcomments.cleaned_data["post_urls"]
                 )
+                while content.state not in ("SUCCESS", "FAILURE"):
+                    time.sleep(0.5)
+                if content.failed():
+                    return HttpResponse(status=400)
+
+                content = pd.read_json(content.get())
                 if formpostcomments.cleaned_data["export_format"] == "csv":
                     response[
                         "Content-Disposition"
@@ -51,6 +59,12 @@ def reddit_scraper(request):
                 content = extract_comments_user.delay(
                     formusercomments.cleaned_data["username"]
                 )
+                while not content.ready():
+                    time.sleep(0.5)
+                if content.failed():
+                    return HttpResponse(status=400)
+
+                content = pd.read_json(content.get())
                 if formusercomments.cleaned_data["export_format"] == "csv":
                     response[
                         "Content-Disposition"
@@ -73,6 +87,12 @@ def reddit_scraper(request):
                 content = extract_posts_user.delay(
                     formuserposts.cleaned_data["username"]
                 )
+                while content.state not in ("SUCCESS", "FAILURE"):
+                    time.sleep(0.5)
+                if content.failed():
+                    return HttpResponse(status=400)
+
+                content = pd.read_json(content.get())
                 if formuserposts.cleaned_data["export_format"] == "csv":
                     response[
                         "Content-Disposition"
@@ -104,7 +124,11 @@ def reddit_scraper(request):
 def fl_redirect(request):
     try:
         url = retrieve_last_FL.delay()
-        return redirect(url)
+        while url.state not in ("SUCCESS", "FAILURE"):
+            time.sleep(0.5)
+        if url.failed():
+            return HttpResponse(status=400)
+        return redirect(url.get())
     except Exception as e:
         print(e)
         return HttpResponse(content=e, status=400)

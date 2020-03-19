@@ -8,19 +8,11 @@ import requests
 import json
 
 
-# app = Celery("tasks", broker="redis://localhost")
-@shared_task
-def add(x, y):
-    return x + y
-
-
 @shared_task
 def extract_comments_post(url=None):
-    print("extract_comments_post")
     reddit = redditconnect()
     comments = []
     urls = [x.strip() for x in url.split(",")]
-    print(urls)
     for url in urls:
         submission = reddit.submission(url=url)
         submission.comments.replace_more(limit=None)
@@ -29,7 +21,6 @@ def extract_comments_post(url=None):
                 author = "[deleted]"
             else:
                 author = comment.author.name
-            print(author)
             comments.append(
                 {
                     "id": comment.id,
@@ -51,20 +42,16 @@ def extract_comments_post(url=None):
                 }
             )
 
-    print(comments)
     df = pd.DataFrame(comments)
     df["date"] = pd.to_datetime(df["timestamp"], unit="s")
-    print(df)
-    return df
+    return df.to_json()
 
 
 @shared_task
 def extract_comments_user(username):
-    print("extract_comments_user")
     usernames = [x.strip() for x in username.split(",")]
     comments = []
     reddit = redditconnect()
-    print(usernames)
     for username in usernames:
         user = reddit.redditor(username)
         for index, comment in enumerate(user.comments.new(limit=None), 1):
@@ -85,20 +72,16 @@ def extract_comments_user(username):
                     "post_author": comment.link_author,
                 }
             )
-    print(comments)
     df = pd.DataFrame(comments)
     df["date"] = pd.to_datetime(df["timestamp"], unit="s")
-    print(df)
-    return df
+    return df.to_json()
 
 
 @shared_task
 def extract_posts_user(username):
-    print("extract_posts_user")
     usernames = [x.strip() for x in username.split(",")]
     reddit = redditconnect()
     posts = []
-    print(usernames)
     for username in usernames:
         user = reddit.redditor(username)
         for index, submission in enumerate(
@@ -127,11 +110,9 @@ def extract_posts_user(username):
                     "can_crosspost": submission.is_crosspostable,
                 }
             )
-    print(posts)
     df = pd.DataFrame(posts)
     df["date"] = pd.to_datetime(df["timestamp"], unit="s")
-    print(df)
-    return df
+    return df.to_json()
 
 
 @shared_task

@@ -3,3 +3,4 @@ tags
 .venv/
 db.sqlite3
 .env
+__pycache__/

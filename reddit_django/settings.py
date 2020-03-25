@@ -31,7 +31,7 @@ def get_secret(BASE_DIR, config_file):
         print(
             f"Error with the config file. Be sure to have a valid config file. Error : {e}.",
         )
-        return os.environ["DJANGO_SECRET_KEY"]
+        return os.environ.get("DJANGO_SECRET_KEY", "")
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -139,7 +139,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 STATIC_URL = "/static/"
 
-CELERY_BROKER_URL = os.environ["HEROKU_REDIS_ROSE_URL"]
+CELERY_BROKER_URL = os.environ.get("HEROKU_REDIS_ROSE_URL", "")
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_CACHE_BACKEND = "django-cache"
 

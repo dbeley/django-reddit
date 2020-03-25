@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  redis:
+    image: redis
+  web:
+    build: .
+    command: gunicorn reddit_django.wsgi --bind 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    environment:
+      - HEROKU_REDIS_ROSE_URL=redis://redis:6379
+  celery:
+    build: .
+    command: celery -A reddit_django worker -l info
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+      - web
+    environment:
+      - HEROKU_REDIS_ROSE_URL=redis://redis:6379

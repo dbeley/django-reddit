@@ -26,6 +26,12 @@ password=password_here
 username=username_here
 ```
 
+### .env
+
+```
+HEROKU_REDIS_ROSE_URL=redis://localhost
+```
+
 ### Environment variables
 
 If you can't use ini files (i.e. when deploying with heroku), you can use those environment variables:
@@ -35,3 +41,4 @@ If you can't use ini files (i.e. when deploying with heroku), you can use those 
 - `PRAW_PASSWORD`
 - `PRAW_USERNAME`
 - `DJANGO_SECRET_KEY`
+- `HEROKU_REDIS_ROSE_URL`

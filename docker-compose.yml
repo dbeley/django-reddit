@@ -4,16 +4,22 @@ services:
   redis:
     image: redis
   web:
+    container_name: reddit_django
     build: .
     command: gunicorn reddit_django.wsgi --bind 0.0.0.0:8000
     volumes:
       - .:/code
-    ports:
-      - "8000:8000"
+        # ports:
+        #   - "8000:8000"
     depends_on:
       - redis
     environment:
       - HEROKU_REDIS_ROSE_URL=redis://redis:6379
+    labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.reddit_django.entrypoints=insecure"
+        - "traefik.http.routers.reddit_django.rule=Host(`reddit.$DOMAIN`)"
+        - "traefik.http.services.reddit_django.loadbalancer.server.port=8000"
   celery:
     build: .
     command: celery -A reddit_django worker -l info
@@ -24,3 +30,8 @@ services:
       - web
     environment:
       - HEROKU_REDIS_ROSE_URL=redis://redis:6379
+
+networks:
+    default:
+        external:
+            name: $DEFAULT_NETWORK

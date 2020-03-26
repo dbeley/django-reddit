@@ -26,10 +26,13 @@ password=password_here
 username=username_here
 ```
 
-### .env
+### .env file
 
 ```
 HEROKU_REDIS_ROSE_URL=redis://localhost
+# optional, for docker + traefik
+DEFAULT_NETWORK=trafik-network
+DOMAIN=localhost
 ```
 
 ### Environment variables

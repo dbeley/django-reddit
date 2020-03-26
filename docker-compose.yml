@@ -17,9 +17,10 @@ services:
       - HEROKU_REDIS_ROSE_URL=redis://redis:6379
     labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.reddit_django.entrypoints=insecure"
+        - "traefik.http.routers.reddit_django.entrypoints=secure"
         - "traefik.http.routers.reddit_django.rule=Host(`reddit.$DOMAIN`)"
         - "traefik.http.services.reddit_django.loadbalancer.server.port=8000"
+        - "traefik.http.routers.reddit_django.tls.certresolver=le"
   celery:
     build: .
     command: celery -A reddit_django worker -l info

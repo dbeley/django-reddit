@@ -7,7 +7,9 @@ import time
 from .tasks import (
     extract_comments_post,
     extract_comments_user,
+    extract_comments_user_psaw,
     extract_posts_user,
+    extract_posts_user_psaw,
     retrieve_last_FL,
 )
 import django_tables2 as tables
@@ -36,10 +38,7 @@ def reddit_scraper(request):
                             "Content-Disposition"
                         ] = f"attachment; filename=post_comments.csv"
                         content.to_csv(response, index=False, sep="\t")
-                    elif (
-                        formpostcomments.cleaned_data["export_format"]
-                        == "xlsx"
-                    ):
+                    elif formpostcomments.cleaned_data["export_format"] == "xlsx":
                         response[
                             "Content-Disposition"
                         ] = f"attachment; filename=post_comments.xlsx"
@@ -52,7 +51,7 @@ def reddit_scraper(request):
                 formusercomments = UserComments(request.POST)
                 if formusercomments.is_valid():
                     response = HttpResponse(content_type="text/plain")
-                    content = extract_comments_user.delay(
+                    content = extract_comments_user_psaw.delay(
                         formusercomments.cleaned_data["username"]
                     )
                     while content.state not in ("SUCCESS", "FAILURE"):
@@ -63,10 +62,7 @@ def reddit_scraper(request):
                             "Content-Disposition"
                         ] = f"attachment; filename={formusercomments.cleaned_data['username']}_user_comments.csv"
                         content.to_csv(response, index=False, sep="\t")
-                    elif (
-                        formusercomments.cleaned_data["export_format"]
-                        == "xlsx"
-                    ):
+                    elif formusercomments.cleaned_data["export_format"] == "xlsx":
                         response[
                             "Content-Disposition"
                         ] = f"attachment; filename={formusercomments.cleaned_data['username']}_user_comments.xlsx"
@@ -79,7 +75,7 @@ def reddit_scraper(request):
                 formuserposts = UserPosts(request.POST)
                 if formuserposts.is_valid():
                     response = HttpResponse(content_type="text/plain")
-                    content = extract_posts_user.delay(
+                    content = extract_posts_user_psaw.delay(
                         formuserposts.cleaned_data["username"]
                     )
                     while content.state not in ("SUCCESS", "FAILURE"):

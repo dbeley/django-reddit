@@ -20,6 +20,7 @@ celery = "*"
 redis = "*"
 django-celery-results = "*"
 django-redis-cache = "*"
+psaw = "*"
 
 [requires]
 python_version = "3.8"

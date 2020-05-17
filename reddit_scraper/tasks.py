@@ -268,6 +268,7 @@ def extract_comments_user_psaw(username):
     df["date"] = pd.to_datetime(df["created"], unit="s")
     df["permalink"] = "https://old.reddit.com" + df["permalink"].astype(str)
     df = df[df.columns.intersection(COLUMNS_COMMENTS)]
+    df = df[COLUMNS_COMMENTS]
     return df.to_json()
 
 
@@ -284,6 +285,7 @@ def extract_posts_user_psaw(username):
     df["date"] = pd.to_datetime(df["created"], unit="s")
     df["permalink"] = "https://old.reddit.com" + df["permalink"].astype(str)
     df = df[df.columns.intersection(COLUMNS_POSTS)]
+    df = df[COLUMNS_POSTS]
     return df.to_json()
 
 

@@ -45,3 +45,10 @@ If you can't use ini files (i.e. when deploying with heroku), you can use those 
 - `PRAW_USERNAME`
 - `DJANGO_SECRET_KEY`
 - `HEROKU_REDIS_ROSE_URL`
+
+## Deploy
+
+```
+sudo docker-compose build
+sudo docker-compose up -d
+```

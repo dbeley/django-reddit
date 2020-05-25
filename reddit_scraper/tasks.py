@@ -151,7 +151,7 @@ COLUMNS_COMMENTS = [
 
 
 @shared_task
-def extract_comments_post(url=None):
+def extract_comments_post_praw(url=None):
     reddit = redditconnect()
     comments = []
     urls = [x.strip() for x in url.split(",")]
@@ -190,7 +190,7 @@ def extract_comments_post(url=None):
 
 
 @shared_task
-def extract_comments_user(username):
+def extract_comments_user_praw(username):
     usernames = [x.strip() for x in username.split(",")]
     comments = []
     reddit = redditconnect()
@@ -220,7 +220,7 @@ def extract_comments_user(username):
 
 
 @shared_task
-def extract_posts_user(username):
+def extract_posts_user_praw(username):
     usernames = [x.strip() for x in username.split(",")]
     reddit = redditconnect()
     posts = []

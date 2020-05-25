@@ -5,10 +5,10 @@ import pandas as pd
 import time
 
 from .tasks import (
-    extract_comments_post,
-    extract_comments_user,
+    extract_comments_post_praw,
+    extract_comments_user_praw,
     extract_comments_user_psaw,
-    extract_posts_user,
+    extract_posts_user_praw,
     extract_posts_user_psaw,
     retrieve_last_FL,
 )
@@ -19,6 +19,16 @@ def index(request):
     return render(request, "reddit_scraper/index.html")
 
 
+def format_content(export_format, response, content, filename):
+    if export_format == "xlsx":
+        response["Content-Disposition"] = f"attachment; filename={filename}.xlsx"
+        content.to_excel(response, index=False)
+    elif export_format == "csv":
+        response["Content-Disposition"] = f"attachment; filename={filename}.csv"
+        content.to_csv(response, index=False, sep="\t")
+    return response
+
+
 # Create your views here.
 def reddit_scraper(request):
     if request.method == "POST":
@@ -27,23 +37,18 @@ def reddit_scraper(request):
                 formpostcomments = PostComments(request.POST)
                 if formpostcomments.is_valid():
                     response = HttpResponse(content_type="text/plain")
-                    content = extract_comments_post.delay(
+                    content = extract_comments_post_praw.delay(
                         formpostcomments.cleaned_data["post_urls"]
                     )
                     while content.state not in ("SUCCESS", "FAILURE"):
                         time.sleep(0.5)
                     content = pd.read_json(content.get())
-                    if formpostcomments.cleaned_data["export_format"] == "csv":
-                        response[
-                            "Content-Disposition"
-                        ] = f"attachment; filename=post_comments.csv"
-                        content.to_csv(response, index=False, sep="\t")
-                    elif formpostcomments.cleaned_data["export_format"] == "xlsx":
-                        response[
-                            "Content-Disposition"
-                        ] = f"attachment; filename=post_comments.xlsx"
-                        content.to_excel(response, index=False)
-                    return response
+                    return format_content(
+                        export_format=formpostcomments.cleaned_data["export_format"],
+                        response=response,
+                        content=content,
+                        filename="post_comments",
+                    )
             except Exception as e:
                 return HttpResponseNotFound(e)
         elif "formusercomments" in request.POST:
@@ -51,23 +56,23 @@ def reddit_scraper(request):
                 formusercomments = UserComments(request.POST)
                 if formusercomments.is_valid():
                     response = HttpResponse(content_type="text/plain")
-                    content = extract_comments_user_psaw.delay(
-                        formusercomments.cleaned_data["username"]
-                    )
+                    if formusercomments.cleaned_data["api"] == "reddit":
+                        content = extract_comments_user_praw.delay(
+                            formusercomments.cleaned_data["username"]
+                        )
+                    elif formusercomments.cleaned_data["api"] == "pushshift":
+                        content = extract_comments_user_psaw.delay(
+                            formusercomments.cleaned_data["username"]
+                        )
                     while content.state not in ("SUCCESS", "FAILURE"):
                         time.sleep(0.5)
                     content = pd.read_json(content.get())
-                    if formusercomments.cleaned_data["export_format"] == "csv":
-                        response[
-                            "Content-Disposition"
-                        ] = f"attachment; filename={formusercomments.cleaned_data['username']}_user_comments.csv"
-                        content.to_csv(response, index=False, sep="\t")
-                    elif formusercomments.cleaned_data["export_format"] == "xlsx":
-                        response[
-                            "Content-Disposition"
-                        ] = f"attachment; filename={formusercomments.cleaned_data['username']}_user_comments.xlsx"
-                        content.to_excel(response, index=False)
-                    return response
+                    return format_content(
+                        export_format=formusercomments.cleaned_data["export_format"],
+                        response=response,
+                        content=content,
+                        filename=f"{formusercomments.cleaned_data['username']}_user_comments",
+                    )
             except Exception as e:
                 return HttpResponseNotFound(e)
         elif "formuserposts" in request.POST:
@@ -75,23 +80,23 @@ def reddit_scraper(request):
                 formuserposts = UserPosts(request.POST)
                 if formuserposts.is_valid():
                     response = HttpResponse(content_type="text/plain")
-                    content = extract_posts_user_psaw.delay(
-                        formuserposts.cleaned_data["username"]
-                    )
+                    if formuserposts.cleaned_data["api"] == "reddit":
+                        content = extract_posts_user_praw.delay(
+                            formuserposts.cleaned_data["username"]
+                        )
+                    elif formuserposts.cleaned_data["api"] == "pushshift":
+                        content = extract_posts_user_psaw.delay(
+                            formuserposts.cleaned_data["username"]
+                        )
                     while content.state not in ("SUCCESS", "FAILURE"):
                         time.sleep(0.5)
                     content = pd.read_json(content.get())
-                    if formuserposts.cleaned_data["export_format"] == "csv":
-                        response[
-                            "Content-Disposition"
-                        ] = f"attachment; filename={formuserposts.cleaned_data['username']}_user_posts.csv"
-                        content.to_csv(response, index=False, sep="\t")
-                    elif formuserposts.cleaned_data["export_format"] == "xlsx":
-                        response[
-                            "Content-Disposition"
-                        ] = f"attachment; filename={formuserposts.cleaned_data['username']}_user_posts.xlsx"
-                        content.to_excel(response, index=False)
-                    return response
+                    return format_content(
+                        export_format=formuserposts.cleaned_data["export_format"],
+                        response=response,
+                        content=content,
+                        filename=f"{formuserposts.cleaned_data['username']}_user_posts",
+                    )
             except Exception as e:
                 return HttpResponseNotFound(e)
 

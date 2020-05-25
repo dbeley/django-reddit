@@ -9,6 +9,7 @@ class PostComments(forms.Form):
         label="Export format",
         choices=(("csv", "Export in csv"), ("xlsx", "Export in xlsx")),
     )
+    api = forms.ChoiceField(label="API to query", choices=(("reddit", "reddit API")),)
 
 
 class UserComments(forms.Form):
@@ -19,6 +20,10 @@ class UserComments(forms.Form):
         label="Export format",
         choices=(("csv", "Export in csv"), ("xlsx", "Export in xlsx")),
     )
+    api = forms.ChoiceField(
+        label="API to query",
+        choices=(("reddit", "reddit API"), ("pushshift", "pushshift API"),),
+    )
 
 
 class UserPosts(forms.Form):
@@ -28,4 +33,9 @@ class UserPosts(forms.Form):
     export_format = forms.ChoiceField(
         label="Export format",
         choices=(("csv", "Export in csv"), ("xlsx", "Export in xlsx")),
+    )
+
+    api = forms.ChoiceField(
+        label="API to query",
+        choices=(("reddit", "reddit API"), ("pushshift", "pushshift API"),),
     )

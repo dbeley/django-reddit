@@ -9,7 +9,7 @@ class PostComments(forms.Form):
         label="Export format",
         choices=(("csv", "Export in csv"), ("xlsx", "Export in xlsx")),
     )
-    api = forms.ChoiceField(label="API to query", choices=(("reddit", "reddit API")),)
+    api = forms.ChoiceField(label="API to query", choices=(("reddit", "reddit API"),))
 
 
 class UserComments(forms.Form):

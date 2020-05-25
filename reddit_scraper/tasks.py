@@ -9,9 +9,18 @@ import requests
 import json
 
 COLUMNS_POSTS = [
+    "author",
+    "title",
+    "permalink",
+    "url",
+    "selftext",
+    "score",
+    "num_comments",
+    "subreddit",
     "date",
     "date_utc",
-    "author",
+    "created",
+    "created_utc",
     # "author_flair_css_class",
     # "author_flair_richtext",
     # "author_flair_text",
@@ -19,7 +28,6 @@ COLUMNS_POSTS = [
     # "brand_safe",
     # "can_mod_post",
     # "contest_mode",
-    "created_utc",
     "domain",
     "full_link",
     # "gilded",
@@ -38,32 +46,24 @@ COLUMNS_POSTS = [
     # "link_flair_type",
     # "locked",
     # "no_follow",
-    "num_comments",
     # "num_crossposts",
     # "over_18",
     # "parent_whitelist_status",
-    "permalink",
     # "pinned",
     # "post_hint",
     # "preview",
     # "retrieved_on",
     # "rte_mode",
-    "score",
-    "selftext",
     # "send_replies",
     # "spoiler",
     # "stickied",
-    "subreddit",
     # "subreddit_id",
     "subreddit_subscribers",
     # "subreddit_type",
     "thumbnail",
     # "thumbnail_height",
     # "thumbnail_width",
-    "title",
-    "url",
     # "whitelist_status",
-    "created",
     # "media",
     # "media_embed",
     # "secure_media",
@@ -95,11 +95,19 @@ COLUMNS_POSTS = [
 
 
 COLUMNS_COMMENTS = [
+    "author",
+    "body",
+    "permalink",
+    "score",
+    "subreddit",
     "date",
     "date_utc",
+    "created",
+    "created_utc",
+    "edited",
+    "updated_utc",
     # "all_awardings",
     # "associated_award",
-    "author",
     # "author_flair_background_color",
     # "author_flair_css_class",
     # "author_flair_richtext",
@@ -111,9 +119,7 @@ COLUMNS_COMMENTS = [
     # "author_patreon_flair",
     # "author_premium",
     # "awarders",
-    "body",
     # "collapsed_because_crowd_control",
-    "created_utc",
     # "gildings",
     "id",
     # "is_submitter",
@@ -121,19 +127,13 @@ COLUMNS_COMMENTS = [
     # "locked",
     # "no_follow",
     "parent_id",
-    "permalink",
     # "retrieved_on",
-    "score",
     # "send_replies",
     # "stickied",
-    "subreddit",
     # "subreddit_id",
     # "total_awards_received",
     # "treatment_tags",
-    "created",
-    "edited",
     # "steward_reports",
-    "updated_utc",
     # "author_created_utc",
     # "can_gild",
     # "collapsed",
@@ -264,10 +264,11 @@ def extract_comments_user_psaw(username):
         res = api.search_comments(author=username)
         df_new = pd.DataFrame([thing.d_ for thing in res])
         df = pd.concat([df, df_new], ignore_index=True)
-    df["date_utc"] = pd.to_datetime(df["created_utc"], unit="s")
-    df["date"] = pd.to_datetime(df["created"], unit="s")
+    df["date_utc"] = pd.to_datetime(df["created_utc"].astype(int), unit="s")
+    df["date"] = pd.to_datetime(df["created"].astype(int), unit="s")
     df["permalink"] = "https://old.reddit.com" + df["permalink"].astype(str)
     df = df[df.columns.intersection(COLUMNS_COMMENTS)]
+    df = df[COLUMNS_COMMENTS]
     return df.to_json()
 
 
@@ -280,10 +281,11 @@ def extract_posts_user_psaw(username):
         res = api.search_submissions(author=username)
         df_new = pd.DataFrame([thing.d_ for thing in res])
         df = pd.concat([df, df_new], ignore_index=True)
-    df["date_utc"] = pd.to_datetime(df["created_utc"], unit="s")
-    df["date"] = pd.to_datetime(df["created"], unit="s")
+    df["date_utc"] = pd.to_datetime(df["created_utc"].astype(int), unit="s")
+    df["date"] = pd.to_datetime(df["created"].astype(int), unit="s")
     df["permalink"] = "https://old.reddit.com" + df["permalink"].astype(str)
     df = df[df.columns.intersection(COLUMNS_POSTS)]
+    df = df[COLUMNS_POSTS]
     return df.to_json()
 
 

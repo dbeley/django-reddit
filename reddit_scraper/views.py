@@ -121,6 +121,6 @@ def fl_redirect(request):
         url = retrieve_last_FL.delay()
         while url.state not in ("SUCCESS", "FAILURE"):
             time.sleep(0.5)
-        return redirect(url.get())
+        return redirect(url.get().replace("www", "old") + "?sort=new")
     except Exception as e:
         return HttpResponseNotFound(e)

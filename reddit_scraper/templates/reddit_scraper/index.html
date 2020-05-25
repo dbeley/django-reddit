@@ -12,9 +12,14 @@
 
 	<li><a href="{% url 'scraping' %}">Scraping</a>: Scraping tools.</li>
 	<ul>
+		{% comment %}
 		<li><a href="{% url 'scraping'%}#postcomments">Post Comments</a>: Export comments of one or several reddit posts.</li>
 		<li><a href="{% url 'scraping'%}#usercomments">User Comments</a>: Export the comments of one or several reddit users.</li>
 		<li><a href="{% url 'scraping'%}#userposts">User Posts</a>: Export the posts of one or several reddit users.</li>
+		{% endcomment %}
+		<li>Post Comments: Export comments of one or several reddit posts.</li>
+		<li>User Comments: Export the comments of one or several reddit users.</li>
+		<li>User Posts: Export the posts of one or several reddit users.</li>
 	</ul>
 	<li><a href="{% url 'forumlibre' %}">Forum Libre Redirect</a>: Redirect to the latest Forum Libre on /r/france.</li>
 </ul>

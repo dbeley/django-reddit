@@ -9,7 +9,7 @@ class PostComments(forms.Form):
         label="Export format",
         choices=(("csv", "Export in csv"), ("xlsx", "Export in xlsx")),
     )
-    api = forms.ChoiceField(label="API to query", choices=(("reddit", "reddit API"),))
+    api = forms.ChoiceField(label="API to query", choices=(("reddit", "Reddit API"),))
 
 
 class UserComments(forms.Form):
@@ -22,7 +22,7 @@ class UserComments(forms.Form):
     )
     api = forms.ChoiceField(
         label="API to query",
-        choices=(("reddit", "reddit API"), ("pushshift", "pushshift API"),),
+        choices=(("reddit", "Reddit API"), ("pushshift", "Pushshift API"),),
     )
 
 
@@ -34,8 +34,77 @@ class UserPosts(forms.Form):
         label="Export format",
         choices=(("csv", "Export in csv"), ("xlsx", "Export in xlsx")),
     )
-
     api = forms.ChoiceField(
         label="API to query",
-        choices=(("reddit", "reddit API"), ("pushshift", "pushshift API"),),
+        choices=(("reddit", "Reddit API"), ("pushshift", "Pushshift API"),),
+    )
+
+
+class SubredditPosts(forms.Form):
+    terms = forms.CharField(
+        label="Search terms (separated by comma, can be empty)", max_length=500
+    )
+    subreddit = forms.CharField(
+        label="Subreddit (separated by comma, can be empty)", max_length=500
+    )
+    export_format = forms.ChoiceField(
+        label="Export format",
+        choices=(("csv", "Export in csv"), ("xlsx", "Export in xlsx")),
+    )
+    api = forms.ChoiceField(
+        label="API to query", choices=(("pushshift", "Pushshift API"),)
+    )
+
+
+class SubredditComments(forms.Form):
+    terms = forms.CharField(
+        label="Search terms (separated by comma, can be empty)", max_length=500
+    )
+    subreddit = forms.CharField(
+        label="Subreddit (separated by comma, can be empty)", max_length=500
+    )
+    export_format = forms.ChoiceField(
+        label="Export format",
+        choices=(("csv", "Export in csv"), ("xlsx", "Export in xlsx")),
+    )
+    api = forms.ChoiceField(
+        label="API to query", choices=(("pushshift", "Pushshift API"),)
+    )
+
+
+class SearchComments(forms.Form):
+    username = forms.CharField(
+        label="Reddit usernames (separated by comma, can be empty)", max_length=500
+    )
+    terms = forms.CharField(
+        label="Search terms (separated by comma, can be empty)", max_length=500
+    )
+    subreddit = forms.CharField(
+        label="Subreddit (separated by comma, can be empty)", max_length=500
+    )
+    export_format = forms.ChoiceField(
+        label="Export format",
+        choices=(("csv", "Export in csv"), ("xlsx", "Export in xlsx")),
+    )
+    api = forms.ChoiceField(
+        label="API to query", choices=(("pushshift", "Pushshift API"),)
+    )
+
+
+class SearchPosts(forms.Form):
+    username = forms.CharField(
+        label="Reddit usernames (separated by comma, can be empty)", max_length=500
+    )
+    terms = forms.CharField(
+        label="Search terms (separated by comma, can be empty)", max_length=500
+    )
+    subreddit = forms.CharField(
+        label="Subreddit (separated by comma, can be empty)", max_length=500
+    )
+    export_format = forms.ChoiceField(
+        label="Export format",
+        choices=(("csv", "Export in csv"), ("xlsx", "Export in xlsx")),
+    )
+    api = forms.ChoiceField(
+        label="API to query", choices=(("pushshift", "Pushshift API"),)
     )

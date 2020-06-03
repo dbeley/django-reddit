@@ -52,3 +52,11 @@ If you can't use ini files (i.e. when deploying with heroku), you can use those 
 sudo docker-compose build
 sudo docker-compose up -d
 ```
+
+# Local deploy
+
+```
+sudo docker run -d -p 6379:6379 redis
+celery -A reddit_django worker -l info -E
+python manage.py runserver
+```

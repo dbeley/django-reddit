@@ -58,4 +58,44 @@
     	{% endbuttons %}
 	</form>
 </div>
+  <div class="tab-pane fade" id="subredditcomments" role="tabpanel" aria-labelledby="subredditcomments-tab">
+  	  <p>Export comments.</p>
+	<form action="" method="post" class="form">
+    	{% csrf_token %}
+    	{% bootstrap_form formsubredditcomments layout='inline' %}
+    	{% buttons %}
+        	<button type="submit" name="formsubredditcomments" class="btn btn-primary">Submit</button>
+    	{% endbuttons %}
+	</form>
+</div>
+  <div class="tab-pane fade" id="subredditposts" role="tabpanel" aria-labelledby="subredditposts-tab">
+  	  <p>Export posts.</p>
+	<form action="" method="post" class="form">
+    	{% csrf_token %}
+    	{% bootstrap_form formsubredditposts layout='inline' %}
+    	{% buttons %}
+        	<button type="submit" name="formsubredditposts" class="btn btn-primary">Submit</button>
+    	{% endbuttons %}
+	</form>
+</div>
+  <div class="tab-pane fade" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+  	  <p>Export comments.</p>
+	<form action="" method="post" class="form">
+    	{% csrf_token %}
+    	{% bootstrap_form formcomments layout='inline' %}
+    	{% buttons %}
+        	<button type="submit" name="formcomments" class="btn btn-primary">Submit</button>
+    	{% endbuttons %}
+	</form>
+</div>
+  <div class="tab-pane fade" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+  	  <p>Export posts.</p>
+	<form action="" method="post" class="form">
+    	{% csrf_token %}
+    	{% bootstrap_form formposts layout='inline' %}
+    	{% buttons %}
+        	<button type="submit" name="formposts" class="btn btn-primary">Submit</button>
+    	{% endbuttons %}
+	</form>
+</div>
 {% endblock %}

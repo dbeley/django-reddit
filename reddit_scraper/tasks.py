@@ -290,6 +290,66 @@ def extract_posts_user_psaw(username):
 
 
 @shared_task
+def extract_comments_subreddit_psaw(subreddit, terms):
+    api = PushshiftAPI()
+    if not subreddit:
+        res = api.search_comments(q=terms)
+    else:
+        res = api.search_comments(q=terms, subreddit=subreddit)
+    df = pd.DataFrame([thing.d_ for thing in res])
+    df["date_utc"] = pd.to_datetime(df["created_utc"], unit="s")
+    df["date"] = pd.to_datetime(df["created"], unit="s")
+    df["permalink"] = "https://old.reddit.com" + df["permalink"].astype(str)
+    df = df[df.columns.intersection(COLUMNS_COMMENTS)]
+    df = df[COLUMNS_COMMENTS]
+    return df.to_json()
+
+
+@shared_task
+def extract_posts_subreddit_psaw(subreddit, terms):
+    api = PushshiftAPI()
+    if not terms:
+        res = api.search_submissions(subreddit=subreddit)
+    elif not subreddit:
+        res = api.search_submissions(q=terms)
+    else:
+        res = api.search_submissions(q=terms, subreddit=subreddit)
+    df = pd.DataFrame([thing.d_ for thing in res])
+    df["date_utc"] = pd.to_datetime(df["created_utc"], unit="s")
+    df["date"] = pd.to_datetime(df["created"], unit="s")
+    df["permalink"] = "https://old.reddit.com" + df["permalink"].astype(str)
+    df = df[df.columns.intersection(COLUMNS_COMMENTS)]
+    df = df[COLUMNS_COMMENTS]
+    return df.to_json()
+
+
+@shared_task
+def extract_comments_psaw(username, subreddit, terms):
+    api = PushshiftAPI()
+    res = api.search_comments(author=username, q=terms, subreddit=subreddit)
+    df = pd.DataFrame([thing.d_ for thing in res])
+    df["date_utc"] = pd.to_datetime(df["created_utc"], unit="s")
+    df["date"] = pd.to_datetime(df["created"], unit="s")
+    df["permalink"] = "https://old.reddit.com" + df["permalink"].astype(str)
+    df = df[df.columns.intersection(COLUMNS_COMMENTS)]
+    df = df[COLUMNS_COMMENTS]
+    return df.to_json()
+
+
+@shared_task
+def extract_posts_psaw(username, subreddit, terms):
+    api = PushshiftAPI()
+    res = api.search_submissions(author=username, q=terms, subreddit=subreddit)
+    df = pd.DataFrame([thing.d_ for thing in res])
+    df["date_utc"] = pd.to_datetime(df["created_utc"], unit="s")
+    df["date"] = pd.to_datetime(df["created"], unit="s")
+    df["permalink"] = "https://old.reddit.com" + df["permalink"].astype(str)
+    df = df[df.columns.intersection(COLUMNS_COMMENTS)]
+    df = df[COLUMNS_COMMENTS]
+    return df.to_json()
+
+
+@shared_task
 def retrieve_last_FL():
     headers = {"User-Agent": "Reddit FL retriever"}
     url = "https://www.reddit.com/search.json?q=subreddit%3Afrance%20flair%3A%22Forum%20Libre%22%20author%3AAutoModerator%20title%3A%22Forum%20Libre*%22&sort=new"

@@ -4,7 +4,7 @@
 
 Simple django site acting as a frontend for:
 
-- [reddit-scraper](https://github.com/dbeley/reddit-scraper): Various scripts for donwloading posts/submissions/comments of a reddit subreddit/post/user.
+- [reddit-scraper](https://github.com/dbeley/reddit-scraper): Various scripts for donwloading posts/submissions/comments of a reddit subreddit/post/user using either the reddit or the pushshift API.
 - /r/france Forum Libre redirect.
 
 ## Secrets
@@ -48,12 +48,14 @@ If you can't use ini files (i.e. when deploying with heroku), you can use those 
 
 ## Deploy
 
+# With Docker
+
 ```
 sudo docker-compose build
 sudo docker-compose up -d
 ```
 
-# Local deploy
+# Local deploy (not suited for production)
 
 ```
 sudo docker run -d -p 6379:6379 redis

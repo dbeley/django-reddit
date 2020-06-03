@@ -8,7 +8,13 @@
 
 	<p>On this website, you will find several tools to play with reddit data. </p>
 
-	<p>For several export tools, you can select to use either the reddit normal API or the <a href="https://pushshift.io">pushshift API</a>. The pushshift API might be able to extract deleted content from reddit, but the scores might be mismatched.</p>
+	<div class="alert alert-info" role="alert">
+	You can select to use either the reddit normal API or the <a href="https://pushshift.io">pushshift API</a>. The pushshift API might be able to extract deleted content from reddit, but the scores might be mismatched.
+	</div>
+
+	<div class="alert alert-warning" role="alert">
+	The csv export option might cause issues with Microsoft Excel. Either export the file in xlsx or use another spreadsheet like <a href="https://www.libreoffice.org/">LibreOffice</a>.
+	</div>
 
 	<li><a href="{% url 'scraping' %}">Scraping</a>: Scraping tools.</li>
 	<ul>

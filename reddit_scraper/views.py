@@ -1,15 +1,16 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
-from .forms import PostComments, UserComments, UserPosts
+from .forms import (
+    SearchComments,
+    SearchPosts,
+)
 import pandas as pd
 import time
+from datetime import datetime
 
 from .tasks import (
-    extract_comments_post_praw,
-    extract_comments_user_praw,
-    extract_comments_user_psaw,
-    extract_posts_user_praw,
-    extract_posts_user_psaw,
+    extract_comments_psaw,
+    extract_posts_psaw,
     retrieve_last_FL,
 )
 import django_tables2 as tables
@@ -32,87 +33,59 @@ def format_content(export_format, response, content, filename):
 # Create your views here.
 def reddit_scraper(request):
     if request.method == "POST":
-        if "formpostcomments" in request.POST:
+        if "formposts" in request.POST:
             try:
-                formpostcomments = PostComments(request.POST)
-                if formpostcomments.is_valid():
+                formposts = SearchPosts(request.POST)
+                if formposts.is_valid():
                     response = HttpResponse(content_type="text/plain")
-                    content = extract_comments_post_praw.delay(
-                        formpostcomments.cleaned_data["post_urls"]
-                    )
-                    while content.state not in ("SUCCESS", "FAILURE"):
-                        time.sleep(0.5)
-                    content = pd.read_json(content.get())
-                    return format_content(
-                        export_format=formpostcomments.cleaned_data["export_format"],
-                        response=response,
-                        content=content,
-                        filename="post_comments",
-                    )
-            except Exception as e:
-                return HttpResponseNotFound(e)
-        elif "formusercomments" in request.POST:
-            try:
-                formusercomments = UserComments(request.POST)
-                if formusercomments.is_valid():
-                    response = HttpResponse(content_type="text/plain")
-                    if formusercomments.cleaned_data["api"] == "reddit":
-                        content = extract_comments_user_praw.delay(
-                            formusercomments.cleaned_data["username"]
-                        )
-                    elif formusercomments.cleaned_data["api"] == "pushshift":
-                        content = extract_comments_user_psaw.delay(
-                            formusercomments.cleaned_data["username"]
+                    if formposts.cleaned_data["api"] == "pushshift":
+                        content = extract_posts_psaw.delay(
+                            formposts.cleaned_data["username"],
+                            formposts.cleaned_data["subreddit"],
+                            formposts.cleaned_data["terms"],
                         )
                     while content.state not in ("SUCCESS", "FAILURE"):
                         time.sleep(0.5)
                     content = pd.read_json(content.get())
                     return format_content(
-                        export_format=formusercomments.cleaned_data["export_format"],
+                        export_format=formposts.cleaned_data["export_format"],
                         response=response,
                         content=content,
-                        filename=f"{formusercomments.cleaned_data['username']}_user_comments",
+                        filename=f"posts_{datetime.timestamp(datetime.now())}",
                     )
             except Exception as e:
                 return HttpResponseNotFound(e)
-        elif "formuserposts" in request.POST:
+        elif "formcomments" in request.POST:
             try:
-                formuserposts = UserPosts(request.POST)
-                if formuserposts.is_valid():
+                formcomments = SearchComments(request.POST)
+                if formcomments.is_valid():
                     response = HttpResponse(content_type="text/plain")
-                    if formuserposts.cleaned_data["api"] == "reddit":
-                        content = extract_posts_user_praw.delay(
-                            formuserposts.cleaned_data["username"]
-                        )
-                    elif formuserposts.cleaned_data["api"] == "pushshift":
-                        content = extract_posts_user_psaw.delay(
-                            formuserposts.cleaned_data["username"]
+                    if formcomments.cleaned_data["api"] == "pushshift":
+                        content = extract_comments_psaw.delay(
+                            formcomments.cleaned_data["username"],
+                            formcomments.cleaned_data["subreddit"],
+                            formcomments.cleaned_data["terms"],
                         )
                     while content.state not in ("SUCCESS", "FAILURE"):
                         time.sleep(0.5)
                     content = pd.read_json(content.get())
                     return format_content(
-                        export_format=formuserposts.cleaned_data["export_format"],
+                        export_format=formcomments.cleaned_data["export_format"],
                         response=response,
                         content=content,
-                        filename=f"{formuserposts.cleaned_data['username']}_user_posts",
+                        filename=f"comments_{datetime.timestamp(datetime.now())}",
                     )
             except Exception as e:
                 return HttpResponseNotFound(e)
 
     # if a GET (or any other method) we'll create a blank form
     else:
-        formpostcomments = PostComments()
-        formusercomments = UserComments()
-        formuserposts = UserPosts()
+        formcomments = SearchComments()
+        formposts = SearchPosts()
     return render(
         request,
         "reddit_scraper/reddit_scraper.html",
-        {
-            "formpostcomments": formpostcomments,
-            "formusercomments": formusercomments,
-            "formuserposts": formuserposts,
-        },
+        {"formcomments": formcomments, "formposts": formposts,},
     )
 
 

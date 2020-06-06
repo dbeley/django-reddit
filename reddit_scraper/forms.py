@@ -8,7 +8,7 @@ class SearchComments(forms.Form):
         required=False,
     )
     terms = forms.CharField(
-        label="Search terms (separated by comma, can be empty)",
+        label="Search terms (separated by comma, use | for OR)",
         max_length=500,
         required=False,
     )
@@ -31,7 +31,7 @@ class SearchPosts(forms.Form):
         required=False,
     )
     terms = forms.CharField(
-        label="Search terms (separated by comma, can be empty)",
+        label="Search terms (separated by comma, use | for OR)",
         max_length=500,
         required=False,
     )

@@ -25,8 +25,8 @@ COLUMNS_POSTS = [
     "full_link",
     "id",
     "thumbnail",
-    "link_flair_richtext",
-    "link_flair_text",
+    # "link_flair_richtext",
+    # "link_flair_text",
 ]
 
 COLUMNS_COMMENTS = [
@@ -139,7 +139,7 @@ def extract_posts_user_praw(username):
                     "author_text_flair": str(submission.author_flair_text),
                     "permalink": f"https://reddit.com{submission.permalink}",
                     "timestamp": int(submission.created_utc),
-                    "flair": str(submission.link_flair_text),
+                    # "flair": str(submission.link_flair_text),
                     "text": str(submission.selftext),
                     "domain": submission.domain,
                     "gilded": submission.gilded,

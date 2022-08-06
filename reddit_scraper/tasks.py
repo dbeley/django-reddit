@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
-from psaw import PushshiftAPI
+from pmaw import PushshiftAPI
 from celery import shared_task
 from .reddit_scraper import redditconnect
 import pandas as pd
@@ -17,16 +17,11 @@ COLUMNS_POSTS = [
     "score",
     "num_comments",
     "subreddit",
-    "date",
-    # "date_utc",
     "created",
-    # "created_utc",
+    "created_utc",
     "domain",
-    "full_link",
     "id",
     "thumbnail",
-    # "link_flair_richtext",
-    # "link_flair_text",
 ]
 
 COLUMNS_COMMENTS = [
@@ -35,17 +30,11 @@ COLUMNS_COMMENTS = [
     "permalink",
     "score",
     "subreddit",
-    "date",
-    # "date_utc",
     "created",
-    # "created_utc",
-    # "edited",
-    # "updated_utc",
+    "created_utc",
     "id",
     "link_id",
     "parent_id",
-    "author_flair_richtext",
-    "author_flair_text",
 ]
 
 
@@ -150,27 +139,59 @@ def extract_posts_user_praw(username):
 
 
 @shared_task
-def extract_comments_psaw(username, subreddit, terms):
-    api = PushshiftAPI()
+def extract_comments_pmaw(username, subreddit, terms):
+    reddit = redditconnect()
+    api = PushshiftAPI(praw=reddit)
     res = api.search_comments(author=username, q=terms, subreddit=subreddit)
-    df = pd.DataFrame([thing.d_ for thing in res])
-    df["date"] = pd.to_datetime(df["created"], unit="s")
+    try:
+        posts = [post for post in res]
+    except KeyError:
+        raise Exception("No item found")
+    list_dict_post = [
+        {your_key: post[your_key] for your_key in COLUMNS_COMMENTS} for post in posts
+    ]
+    df = pd.DataFrame(list_dict_post)
+    df["created"] = pd.to_datetime(df["created"], unit="s")
     df["permalink"] = "https://old.reddit.com" + df["permalink"].astype(str)
-    df = df[df.columns.intersection(COLUMNS_COMMENTS)]
-    df = df[COLUMNS_COMMENTS]
-    return df.to_json()
+    return df.to_json(default_handler=str)
 
 
 @shared_task
-def extract_posts_psaw(username, subreddit, terms):
-    api = PushshiftAPI()
-    res = api.search_submissions(author=username, q=terms, subreddit=subreddit)
-    df = pd.DataFrame([thing.d_ for thing in res])
-    df["date"] = pd.to_datetime(df["created"], unit="s")
+def extract_comments_post_pmaw(url):
+    reddit = redditconnect()
+    api = PushshiftAPI(praw=reddit)
+    post_id = url.split("/")[6]
+    print(f"#### Post ID is {post_id}")
+    res = api.search_comments(link_id=post_id)
+    try:
+        posts = [post for post in res]
+    except KeyError:
+        raise Exception("No item found")
+    list_dict_post = [
+        {your_key: post[your_key] for your_key in COLUMNS_COMMENTS} for post in posts
+    ]
+    df = pd.DataFrame(list_dict_post)
+    df["created"] = pd.to_datetime(df["created"], unit="s")
     df["permalink"] = "https://old.reddit.com" + df["permalink"].astype(str)
-    df = df[df.columns.intersection(COLUMNS_POSTS)]
-    df = df[COLUMNS_POSTS]
-    return df.to_json()
+    return df.to_json(default_handler=str)
+
+
+@shared_task
+def extract_posts_pmaw(username, subreddit, terms):
+    reddit = redditconnect()
+    api = PushshiftAPI(praw=reddit)
+    res = api.search_submissions(author=username, q=terms, subreddit=subreddit)
+    try:
+        posts = [post for post in res]
+    except KeyError:
+        raise Exception("No item found")
+    list_dict_post = [
+        {your_key: post[your_key] for your_key in COLUMNS_POSTS} for post in posts
+    ]
+    df = pd.DataFrame(list_dict_post)
+    df["created"] = pd.to_datetime(df["created"], unit="s")
+    df["permalink"] = "https://old.reddit.com" + df["permalink"].astype(str)
+    return df.to_json(default_handler=str)
 
 
 @shared_task

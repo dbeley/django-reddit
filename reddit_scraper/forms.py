@@ -17,6 +17,11 @@ class SearchComments(forms.Form):
         max_length=500,
         required=False,
     )
+    url = forms.CharField(
+        label="Post URL (will render above fields inactive)",
+        max_length=500,
+        required=False,
+    )
     export_format = forms.ChoiceField(
         label="Export format",
         choices=(("xlsx", "Export in xlsx"), ("csv", "Export in csv")),
@@ -39,11 +44,6 @@ class SearchPosts(forms.Form):
     )
     subreddit = forms.CharField(
         label="Subreddit (separated by comma)",
-        max_length=500,
-        required=False,
-    )
-    url = forms.CharField(
-        label="Post URL (will render above fields inactive)",
         max_length=500,
         required=False,
     )

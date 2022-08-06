@@ -1,0 +1,4 @@
+.git/
+tags
+.venv/
+__pycache__/

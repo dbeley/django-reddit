@@ -9,8 +9,9 @@ import time
 from datetime import datetime
 
 from .tasks import (
-    extract_comments_psaw,
-    extract_posts_psaw,
+    extract_comments_pmaw,
+    extract_comments_post_pmaw,
+    extract_posts_pmaw,
     retrieve_last_FL,
 )
 import django_tables2 as tables
@@ -36,35 +37,42 @@ def reddit_scraper(request):
             try:
                 formposts = SearchPosts(request.POST)
                 if formposts.is_valid():
+                    data = formposts.cleaned_data
                     response = HttpResponse(content_type="text/plain")
-                    if formposts.cleaned_data["api"] == "pushshift":
-                        content = extract_posts_psaw.delay(
-                            formposts.cleaned_data["username"],
-                            formposts.cleaned_data["subreddit"],
-                            formposts.cleaned_data["terms"],
+                    if data["api"] == "pushshift":
+                        content = extract_posts_pmaw.delay(
+                            data["username"],
+                            data["subreddit"],
+                            data["terms"],
                         )
                     while content.state not in ("SUCCESS", "FAILURE"):
                         time.sleep(0.5)
                     content = pd.read_json(content.get())
+                    filename = "posts_"
+                    if data["username"]:
+                        filename += f"{data['username']}_"
+                    elif data["subreddit"]:
+                        filename += f"{data['subreddit']}_"
+                    filename += f"{datetime.timestamp(datetime.now())}"
                     return format_content(
-                        export_format=formposts.cleaned_data["export_format"],
+                        export_format=data["export_format"],
                         response=response,
                         content=content,
-                        filename=f"posts_{datetime.timestamp(datetime.now())}",
+                        filename=filename,
                     )
             except Exception as e:
                 return HttpResponseNotFound(e)
         elif "formcomments" in request.POST:
             try:
                 formcomments = SearchComments(request.POST)
-                data = formcomments.cleaned_data
                 if formcomments.is_valid():
+                    data = formcomments.cleaned_data
                     response = HttpResponse(content_type="text/plain")
                     if data["api"] == "pushshift":
                         if data["url"]:
-                            content = extract_comments_post_praw.delay(data["url"])
+                            content = extract_comments_post_pmaw.delay(data["url"])
                         else:
-                            content = extract_comments_psaw.delay(
+                            content = extract_comments_pmaw.delay(
                                 data["username"],
                                 data["subreddit"],
                                 data["terms"],

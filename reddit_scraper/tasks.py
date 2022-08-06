@@ -58,28 +58,23 @@ def extract_comments_post_praw(url=None):
         submission = reddit.submission(url=url)
         submission.comments.replace_more(limit=None)
         for index, comment in enumerate(submission.comments.list(), 1):
-            if not comment.author:
-                author = "[deleted]"
-            else:
-                author = comment.author.name
+            author = "[deleted]" if not comment.author else str(comment.author.name)
             comments.append(
                 {
-                    "id": str(comment.id),
-                    "subreddit": str(comment.subreddit.display_name),
-                    "timestamp": int(comment.created_utc),
-                    "author": str(author),
-                    "comment": str(comment.body),
-                    "score": str(comment.score),
-                    "length": len(comment.body),
-                    "gilded": int(comment.gilded),
-                    "parent": str(comment.parent_id),
-                    "flair": str(comment.author_flair_text),
-                    "post_id": str(submission.id),
-                    "post_permalink": f"https://reddit.com{submission.permalink}",
-                    "post_title": str(submission.title),
-                    "post_author": str(submission.author),
-                    "post_url": str(submission.url),
+                    "author": author,
+                    "id": comment.id,
+                    "comment": comment.body,
                     "permalink": f"https://reddit.com{comment.permalink}",
+                    "length": len(comment.body),
+                    "timestamp": int(comment.created_utc),
+                    "score": comment.score,
+                    "subreddit": comment.subreddit.display_name,
+                    "gilded": comment.gilded,
+                    "post_id": comment.link_id,
+                    "post_title": comment.link_title,
+                    "post_url": comment.link_url,
+                    "post_author": comment.link_author,
+                    "parent": str(comment.parent_id),
                 }
             )
 
@@ -160,7 +155,6 @@ def extract_comments_psaw(username, subreddit, terms):
     res = api.search_comments(author=username, q=terms, subreddit=subreddit)
     df = pd.DataFrame([thing.d_ for thing in res])
     df["date"] = pd.to_datetime(df["created"], unit="s")
-    # df["date_utc"] = pd.to_datetime(df["created_utc"], unit="s")
     df["permalink"] = "https://old.reddit.com" + df["permalink"].astype(str)
     df = df[df.columns.intersection(COLUMNS_COMMENTS)]
     df = df[COLUMNS_COMMENTS]
@@ -173,7 +167,6 @@ def extract_posts_psaw(username, subreddit, terms):
     res = api.search_submissions(author=username, q=terms, subreddit=subreddit)
     df = pd.DataFrame([thing.d_ for thing in res])
     df["date"] = pd.to_datetime(df["created"], unit="s")
-    # df["date_utc"] = pd.to_datetime(df["created_utc"], unit="s")
     df["permalink"] = "https://old.reddit.com" + df["permalink"].astype(str)
     df = df[df.columns.intersection(COLUMNS_POSTS)]
     df = df[COLUMNS_POSTS]

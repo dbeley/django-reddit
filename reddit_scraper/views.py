@@ -30,7 +30,6 @@ def format_content(export_format, response, content, filename):
     return response
 
 
-# Create your views here.
 def reddit_scraper(request):
     if request.method == "POST":
         if "formposts" in request.POST:
@@ -58,22 +57,35 @@ def reddit_scraper(request):
         elif "formcomments" in request.POST:
             try:
                 formcomments = SearchComments(request.POST)
+                data = formcomments.cleaned_data
                 if formcomments.is_valid():
                     response = HttpResponse(content_type="text/plain")
-                    if formcomments.cleaned_data["api"] == "pushshift":
-                        content = extract_comments_psaw.delay(
-                            formcomments.cleaned_data["username"],
-                            formcomments.cleaned_data["subreddit"],
-                            formcomments.cleaned_data["terms"],
-                        )
+                    if data["api"] == "pushshift":
+                        if data["url"]:
+                            content = extract_comments_post_praw.delay(data["url"])
+                        else:
+                            content = extract_comments_psaw.delay(
+                                data["username"],
+                                data["subreddit"],
+                                data["terms"],
+                            )
                     while content.state not in ("SUCCESS", "FAILURE"):
                         time.sleep(0.5)
                     content = pd.read_json(content.get())
+                    filename = f"comments_"
+                    if data["url"]:
+                        filename += "url_"
+                    elif data["username"]:
+                        filename += f"{data['username']}_"
+                    elif data["subreddit"]:
+                        filename += f"{data['subreddit']}_"
+                    filename += f"{datetime.timestamp(datetime.now())}"
+
                     return format_content(
-                        export_format=formcomments.cleaned_data["export_format"],
+                        export_format=data["export_format"],
                         response=response,
                         content=content,
-                        filename=f"comments_{datetime.timestamp(datetime.now())}",
+                        filename=filename,
                     )
             except Exception as e:
                 return HttpResponseNotFound(e)
@@ -85,7 +97,10 @@ def reddit_scraper(request):
     return render(
         request,
         "reddit_scraper/reddit_scraper.html",
-        {"formcomments": formcomments, "formposts": formposts,},
+        {
+            "formcomments": formcomments,
+            "formposts": formposts,
+        },
     )
 
 

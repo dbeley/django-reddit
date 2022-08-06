@@ -13,7 +13,9 @@ class SearchComments(forms.Form):
         required=False,
     )
     subreddit = forms.CharField(
-        label="Subreddit (separated by comma)", max_length=500, required=False,
+        label="Subreddit (separated by comma)",
+        max_length=500,
+        required=False,
     )
     export_format = forms.ChoiceField(
         label="Export format",
@@ -36,7 +38,14 @@ class SearchPosts(forms.Form):
         required=False,
     )
     subreddit = forms.CharField(
-        label="Subreddit (separated by comma)", max_length=500, required=False,
+        label="Subreddit (separated by comma)",
+        max_length=500,
+        required=False,
+    )
+    url = forms.CharField(
+        label="Post URL (will render above fields inactive)",
+        max_length=500,
+        required=False,
     )
     export_format = forms.ChoiceField(
         label="Export format",
